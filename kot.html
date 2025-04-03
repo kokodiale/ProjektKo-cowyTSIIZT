@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8">
+  <title>Kotek – Finalna Wersja</title>
+  <style>
+    /* RESET I GLOBALNE USTAWIENIA */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      background: linear-gradient(135deg, #f0f0f0, #e0e0e0);
+      font-family: Arial, sans-serif;
+      min-height: 100vh;
+    }
+    
+    /* KONTENER KOTKA – TERAZ Z POZYCJĄ FIXED (PRAWY DÓŁ) */
+    .cat-container {
+      position: fixed;
+      bottom: 20px;    
+      right: 20px;       
+      width: 300px;
+      height: 400px;
+      animation: cat-sway 4s infinite ease-in-out;
+    }
+    
+    /* Cień pod kotkiem */
+    .cat-container::after {
+      content: "";
+      position: absolute;
+      bottom: 65px;
+      left: 50%;
+      width: 150px;
+      height: 10px;
+      background: rgba(0, 0, 0, 0.1);
+      border-radius: 50%;
+      transform: translateX(-50%);
+    }
+    
+    /* ====================================================
+       GŁOWA KOTKA
+    ==================================================== */
+    .cat-head {
+      position: absolute;
+      top: 0;
+      left: 50%;
+      width: 150px;
+      height: 150px;
+      transform: translateX(-50%);
+      background: radial-gradient(circle, #fff, #f9f9f9);
+      border: 4px solid #ffb6c1;
+      border-radius: 50%;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    }
+    
+    /* USZY */
+    .ear {
+      position: absolute;
+      width: 40px;
+      height: 40px;
+      background: #fff;
+      border: 4px solid #ffb6c1;
+      border-radius: 10px;
+      clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
+    }
+    .ear.left {
+      top: -30px;
+      left: 15px;
+    }
+    .ear.right {
+      top: -30px;
+      right: 15px;
+    }
+    .ear::after {
+      content: "";
+      position: absolute;
+      top: 25%;
+      left: 25%;
+      width: 50%;
+      height: 50%;
+      background: #ffd1dc;
+      border-radius: 50%;
+    }
+    
+    /* KŁACZKI FUTRA */
+    .tuft {
+      position: absolute;
+      width: 10px;
+      height: 10px;
+      background: #fff;
+      border: 2px solid #ffb6c1;
+      border-radius: 50%;
+      box-shadow: inset 0 0 3px rgba(0, 0, 0, 0.2);
+    }
+    .tuft.tuft1 { top: 40px; left: -10px; }
+    .tuft.tuft2 { top: 60px; right: -10px; }
+    
+    /* OCZY */
+    .eye {
+      position: absolute;
+      width: 25px;
+      height: 25px;
+      background: #000;
+      border-radius: 50%;
+      overflow: hidden;
+      box-shadow: inset 0 0 8px rgba(255, 255, 255, 0.4);
+    }
+    .eye.left { top: 50px; left: 30px; }
+    .eye.right { top: 50px; right: 30px; }
+    .eye::before {
+      content: "";
+      position: absolute;
+      width: 12px;
+      height: 12px;
+      background: white;
+      border-radius: 50%;
+      top: 4px;
+      left: 4px;
+      z-index: 1;
+    }
+    .eye::after {
+      content: "";
+      position: absolute;
+      width: 6px;
+      height: 6px;
+      background: rgba(255, 255, 255, 0.8);
+      border-radius: 50%;
+      top: 10px;
+      left: 10px;
+      z-index: 1;
+    }
+    
+    /* MRUGANIE */
+    .blink {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 0%;
+      background: white;
+      z-index: 2;
+      animation: blink 4s infinite;
+    }
+    @keyframes blink {
+      0%, 88%, 100% { height: 0%; top: 0; }
+      90% { height: 100%; top: 0; }
+      92% { height: 0%; top: 100%; }
+    }
+    
+    /* BRWI */
+    .eyebrow {
+      position: absolute;
+      width: 24px;
+      height: 12px;
+      background: #000;
+      border-radius: 50%;
+      clip-path: inset(0 0 50% 0);
+    }
+    .eyebrow.left { top: 30px; left: 25px; }
+    .eyebrow.right { top: 30px; right: 25px; }
+    
+    /* NOSEK */
+    .nose {
+      position: absolute;
+      top: 85px;
+      left: 50%;
+      width: 15px;
+      height: 10px;
+      background: pink;
+      border-radius: 50% 50% 40% 40%;
+      transform: translateX(-50%);
+      box-shadow: inset 0 0 4px rgba(0, 0, 0, 0.2);
+    }
+    
+    /* MORDKA */
+    .mouth {
+      position: absolute;
+      top: 95px;
+      left: 50%;
+      width: 40px;
+      height: 20px;
+      transform: translateX(-50%);
+    }
+    .mouth .smile {
+      position: absolute;
+      width: 20px;
+      height: 10px;
+      border-bottom: 2px solid pink;
+      border-radius: 0 0 20px 20px;
+    }
+    .mouth .smile.left {
+      left: 0;
+      transform: rotate(10deg);
+    }
+    .mouth .smile.right {
+      right: 0;
+      transform: rotate(-10deg);
+    }
+    
+    /* WĄSY */
+    .whisker {
+      position: absolute;
+      width: 40px;
+      height: 2px;
+      background: #000;
+    }
+    .whisker.left {
+      top: 110px;
+      left: 0;
+      transform: rotate(5deg);
+    }
+    .whisker.left.middle {
+      top: 115px;
+      left: 0;
+      transform: rotate(0deg);
+    }
+    .whisker.left.bottom {
+      top: 120px;
+      left: 0;
+      transform: rotate(-5deg);
+    }
+    .whisker.right {
+      top: 110px;
+      right: 0;
+      transform: rotate(-5deg);
+    }
+    .whisker.right.middle {
+      top: 115px;
+      right: 0;
+      transform: rotate(0deg);
+    }
+    .whisker.right.bottom {
+      top: 120px;
+      right: 0;
+      transform: rotate(5deg);
+    }
+    
+    /* CIAŁO KOTKA OPAKOWANE W WRAPPER */
+    .cat-body-wrapper {
+      position: absolute;
+      top: 140px;
+      left: 50%;
+      width: 140px;
+      height: 160px;
+      transform: translateX(-50%);
+    }
+    .cat-body {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      background: radial-gradient(circle, #fff, #f9f9f9);
+      border: 4px solid #ffb6c1;
+      border-radius: 50% 50% 40% 40%;
+      box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+    }
+    
+    .belly {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 60px;
+      height: 60px;
+      background: #ffe6f0;
+      border: 4px solid #ffb6c1;
+      border-radius: 50%;
+      transform: translate(-50%, -50%);
+    }
+    
+    /* ŁAPKI */
+    .leg {
+      position: absolute;
+      background: #fff;
+      border: 4px solid #ffb6c1;
+      border-radius: 50%;
+      box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.1);
+    }
+    .leg.front {
+      width: 30px;
+      height: 30px;
+      bottom: -15px;
+    }
+    .leg.front.left { left: 20px; }
+    .leg.front.right { right: 20px; }
+    .leg.back {
+      width: 35px;
+      height: 35px;
+      bottom: -20px;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+    .leg::after {
+      content: "";
+      position: absolute;
+      bottom: 4px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 8px;
+      height: 8px;
+      background: #ffb6c1;
+      border-radius: 50%;
+    }
+    
+    /* OGON */
+    .tail {
+      position: absolute;
+      bottom: -4px;
+      right: -53px;
+      width: 80px;
+      height: 20px;
+      background: radial-gradient(ellipse at center, #fff, #f9f9f9);
+      border: 4px solid #ffb6c1;
+      border-radius: 50px;
+      transform-origin: left center;
+      animation: tail-wag 3s infinite ease-in-out;
+    }
+    .tail::before {
+      content: "";
+      position: absolute;
+      top: 2px;
+      left: 10px;
+      width: 60px;
+      height: 16px;
+      background: radial-gradient(ellipse at center, rgba(255, 182, 193, 0.3), transparent);
+      border-radius: 40px;
+      transform: rotate(10deg);
+    }
+    .tail::after {
+      content: "";
+      position: absolute;
+      bottom: 2px;
+      left: 20px;
+      width: 40px;
+      height: 12px;
+      background: radial-gradient(ellipse at center, rgba(255, 182, 193, 0.3), transparent);
+      border-radius: 30px;
+      transform: rotate(-10deg);
+    }
+    
+    /* ANIMACJE GŁÓWNE */
+    @keyframes cat-sway {
+      0%   { transform: rotate(0deg); }
+      25%  { transform: rotate(3deg); }
+      50%  { transform: rotate(0deg); }
+      75%  { transform: rotate(-3deg); }
+      100% { transform: rotate(0deg); }
+    }
+    @keyframes tail-wag {
+      0%   { transform: rotate(0deg); }
+      25%  { transform: rotate(15deg); }
+      50%  { transform: rotate(0deg); }
+      75%  { transform: rotate(-15deg); }
+      100% { transform: rotate(0deg); }
+    }
+  </style>
+</head>
+<body>
+  <div class="cat-container">
+    <!-- GŁOWA KOTKA -->
+    <div class="cat-head">
+      <div class="ear left"></div>
+      <div class="ear right"></div>
+      <div class="tuft tuft1"></div>
+      <div class="tuft tuft2"></div>
+      <div class="eye left">
+        <div class="blink"></div>
+      </div>
+      <div class="eye right">
+        <div class="blink"></div>
+      </div>
+      <div class="eyebrow left"></div>
+      <div class="eyebrow right"></div>
+      <div class="nose"></div>
+      <div class="mouth">
+        <div class="smile left"></div>
+        <div class="smile right"></div>
+      </div>
+      <div class="whisker left"></div>
+      <div class="whisker left middle"></div>
+      <div class="whisker left bottom"></div>
+      <div class="whisker right"></div>
+      <div class="whisker right middle"></div>
+      <div class="whisker right bottom"></div>
+    </div>
+    
+    <!-- CIAŁO KOTKA -->
+    <div class="cat-body-wrapper">
+      <div class="cat-body">
+        <div class="belly"></div>
+        <div class="leg front left"></div>
+        <div class="leg front right"></div>
+        <div class="leg back"></div>
+        <div class="tail"></div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

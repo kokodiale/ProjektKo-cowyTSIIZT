@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8" />
+  <title>Sklep - Strona Główna</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+    body {
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background: #f9f9f9;
+    }
+    main {
+      flex: 1;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+
+    nav {
+      background: #ffcad4;
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 10px;
+      position: relative;
+    }
+    nav ul {
+      list-style: none;
+      display: flex;
+      gap: 20px;
+      padding: 0;
+      margin: 0;
+    }
+    nav ul li a {
+      text-decoration: none;
+      color: #6d3a6d;
+      font-weight: bold;
+      padding: 5px 10px;
+      border-radius: 5px;
+    }
+    nav ul li a:hover {
+      background-color: #ffc2cd;
+    }
+    #cart-info {
+      position: absolute;
+      right: 20px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: #ffc2cd;
+      padding: 5px 10px;
+      border-radius: 5px;
+      font-weight: bold;
+      color: #6d3a6d;
+    }
+    header {
+      text-align: center;
+      color: #6d3a6d;
+      padding: 20px;
+    }
+    .filter-container {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+    .filter-container input,
+    .filter-container select {
+      padding: 8px;
+      margin: 5px;
+      border: 2px solid #ffc2cd;
+      border-radius: 5px;
+      outline: none;
+      width: 200px;
+      max-width: 90%;
+    }
+    .filter-container button {
+      padding: 10px 20px;
+      background-color: #ffcad4;
+      color: #6d3a6d;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-weight: bold;
+      margin: 5px;
+    }
+    .filter-container button:hover {
+      background-color: #ffc2cd;
+    }
+    .products-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+      justify-content: center;
+    }
+    .product {
+      background: #ffe4e1;
+      width: 200px;
+      border-radius: 10px;
+      overflow: hidden;
+      text-align: center;
+      transition: transform 0.2s ease-in-out;
+      padding: 10px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .product:hover {
+      transform: scale(1.03);
+    }
+    .product img {
+      max-width: 100%;
+      height: 150px;
+      object-fit: cover;
+      border-radius: 8px;
+    }
+    .product a {
+      text-decoration: none;
+      color: #6d3a6d;
+      font-weight: bold;
+      display: block;
+      margin: 5px 0;
+    }
+    .quick-add-btn {
+      padding: 8px;
+      background: #ffcad4;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      color: #6d3a6d;
+      font-weight: bold;
+      margin-top: 10px;
+    }
+    .quick-add-btn:hover {
+      background: #ffc2cd;
+    }
+    footer {
+      text-align: center;
+      padding: 20px;
+      background: #ffcad4;
+      color: #6d3a6d;
+    }
+  </style>
+</head>
+<body>
+  <nav>
+    <ul>
+      <li><a href="index.html">🏠 Strona Główna</a></li>
+      <li><a href="kontakt.html">📞 Kontakt</a></li>
+    </ul>
+    <div id="cart-info">
+      <a href="cart.html" style="text-decoration: none; color: inherit;">
+        🛒 Koszyk: <span id="cart-count">0</span>
+      </a>
+    </div>
+  </nav>
+  <header>
+    <h1>Lista produktów</h1>
+  </header>
+  <main>
+    <div class="filter-container">
+      <input type="text" id="search" placeholder="Wyszukaj po nazwie..." />
+      <select id="categoryFilter">
+        <option value="">Wszystkie kategorie</option>
+        <option value="ciasta">Ciasta</option>
+        <option value="muffinki">Muffinki</option>
+        <option value="czekolady">Czekolady</option>
+        <option value="makaroniki">Makaroniki</option>
+        <option value="ciasteczka">Ciasteczka</option>
+      </select>
+      <input type="number" id="minPrice" placeholder="Cena od..." step="0.01" />
+      <input type="number" id="maxPrice" placeholder="Cena do..." step="0.01" />
+      <select id="sortPrice">
+        <option value="">Bez sortowania</option>
+        <option value="asc">Cena rosnąco</option>
+        <option value="desc">Cena malejąco</option>
+      </select>
+      <button onclick="filterAndRender()">Filtruj</button>
+    </div>
+    <div class="products-grid" id="products-grid">
+    </div>
+  </main>
+  <footer>
+    <p>© 2025 Słodki Sklepik - Wszystkie prawa zastrzeżone</p>
+  </footer>
+
+  <script>
+    /* -------------------------------------- KOSZYK -------------------------------------- */
+    let cart = JSON.parse(localStorage.getItem("cart")) || [];
+    function saveCart() {
+      localStorage.setItem("cart", JSON.stringify(cart));
+    }
+    function addToCart(productSlug) {
+      const existingProduct = cart.find(item => item.slug === productSlug);
+      if (existingProduct) {
+        existingProduct.quantity += 1;
+      } else {
+        const product = products.find(p => p.slug === productSlug);
+        cart.push({
+          slug: product.slug,
+          name: product.name,
+          price: product.price,
+          quantity: 1
+        });
+      }
+      saveCart();
+      updateCartCount();
+    }
+    function updateCartCount() {
+      const totalQuantity = cart.reduce((sum, item) => sum + item.quantity, 0);
+      document.getElementById("cart-count").textContent = totalQuantity;
+    }
+    const products = [
+      // Ciasta
+      { 
+        name: "Sernik",
+        slug: "sernik",
+        category: "ciasta",
+        image: "sernik.png",
+        price: 20.99,
+        description: "Tradycyjny sernik na kruchym spodzie z wiejskiego twarogu."
+      },
+      { 
+        name: "Szarlotka",
+        slug: "szarlotka",
+        category: "ciasta",
+        image: "szarlotka.png",
+        price: 18.99,
+        description: "Klasyczna szarlotka z polskich jabłek, pachnąca cynamonem."
+      },
+      { 
+        name: "Brownie",
+        slug: "brownie",
+        category: "ciasta",
+        image: "brownie.png",
+        price: 22.99,
+        description: "Wilgotne i mocno czekoladowe brownie z chrupiącą skorupką."
+      },
+      // Nuffinki
+      { 
+        name: "Muffinka czekoladowa",
+        slug: "muffinkaczekoladowa",
+        category: "muffinki",
+        image: "babeczkaczekoladowa.png",
+        price: 9.99,
+        description: "Wilgotna muffinka z intensywnie czekoladowym wnętrzem."
+      },
+      { 
+        name: "Muffinka jagodowa",
+        slug: "muffinkajagodowa",
+        category: "muffinki",
+        image: "babeczkajagodowa.png",
+        price: 7.99,
+        description: "Puszysta babeczka wypełniona soczystymi jagodami."
+      },
+      { 
+        name: "Muffinka tęczowa",
+        slug: "muffinkateczowa",
+        category: "muffinki",
+        image: "babeczkateczowa.png",
+        price: 8.99,
+        description: "Kolorowa przyjemność z warstwami ciasta i słodkim lukrem."
+      },
+      // Czekolady
+      { 
+        name: "Czekolada mleczna",
+        slug: "czekoladamleczna",
+        category: "czekolady",
+        image: "czekoladamleczna.png",
+        price: 12.99,
+        description: "Aksamitna, delikatna czekolada mleczna z wysokiej jakości kakao."
+      },
+      { 
+        name: "Czekolada gorzka",
+        slug: "czekoladagorzka",
+        category: "czekolady",
+        image: "czekoladagorzka.png",
+        price: 13.99,
+        description: "Gorzka czekolada o intensywnym aromacie i 70% zawartości kakao."
+      },
+      { 
+        name: "Czekolada orzechowa",
+        slug: "czekoladaorzechowa",
+        category: "czekolady",
+        image: "czekoladaorzechowa.png",
+        price: 14.99,
+        description: "Zaskakująco słodka i interesująca czekolada o smaku orzechów."
+      },
+      // Makaroniki
+      { 
+        name: "Makaronik cytryna",
+        slug: "makaronikcytrynowy",
+        category: "makaroniki",
+        image: "makaronikcytrynowy.png",
+        price: 5.99,
+        description: "Francuski makaronik z aromatem cytryny."
+      },
+      { 
+        name: "Makaronik czekolada",
+        slug: "makaronikczekoladowy",
+        category: "makaroniki",
+        image: "makaronikczekoladowy.png",
+        price: 6.99,
+        description: "Czekoladowy makaronik z intensywnym wnętrzem ganache."
+      },
+      { 
+        name: "Makaronik kokos",
+        slug: "makaronikkokosowy",
+        category: "makaroniki",
+        image: "makaronikkokosowy.png",
+        price: 6.49,
+        description: "Makaronik z chrupiącą otoczką i kokosowym nadzieniem."
+      },
+      // Ciasteczka
+      { 
+        name: "Ciastka z czekoladą",
+        slug: "ciasteczkaczekoladowe",
+        category: "ciasteczka",
+        image: "ciasteczkaczekoladowe.png",
+        price: 10.99,
+        description: "Kruche ciasteczka z dużymi kawałkami czekolady."
+      },
+      { 
+        name: "Ciasteczka owsiane",
+        slug: "ciasteczkaowsiane",
+        category: "ciasteczka",
+        image: "ciasteczkaowsiane.png",
+        price: 8.49,
+        description: "Zdrowe, pełnoziarniste ciasteczka z płatków owsianych."
+      },
+      { 
+        name: "Ciasteczka kokosowe",
+        slug: "ciasteczkakokosowe",
+        category: "ciasteczka",
+        image: "ciasteczkakokosowe.png",
+        price: 9.49,
+        description: "Pachnące kokosem ciasteczka, lekko chrupiące na brzegach."
+      }
+    ];
+    const container = document.getElementById("products-grid");
+
+    /* -------------------------------------- Funkcja do renderowania kafelków -------------------------------------- */
+    function renderProducts(productArray) {
+      container.innerHTML = "";
+      productArray.forEach(product => {
+        const productDiv = document.createElement("div");
+        productDiv.classList.add("product");
+        const imgLink = document.createElement("a");
+        imgLink.href = `product.html?slug=${product.slug}`;
+        const img = document.createElement("img");
+        img.src = product.image;
+        img.alt = product.name;
+        imgLink.appendChild(img);
+        const nameLink = document.createElement("a");
+        nameLink.href = `product.html?slug=${product.slug}`;
+        nameLink.textContent = product.name;
+        const priceParagraph = document.createElement("p");
+        priceParagraph.textContent = product.price.toFixed(2) + " PLN";
+        const quickAddBtn = document.createElement("button");
+        quickAddBtn.classList.add("quick-add-btn");
+        quickAddBtn.textContent = "➕ Quick Add";
+        quickAddBtn.addEventListener("click", () => addToCart(product.slug));
+        productDiv.appendChild(imgLink);
+        productDiv.appendChild(nameLink);
+        productDiv.appendChild(priceParagraph);
+        productDiv.appendChild(quickAddBtn);
+        container.appendChild(productDiv);
+      });
+    }
+
+    function filterAndRender() {
+      const searchValue = document.getElementById("search").value.toLowerCase().trim();
+      const categoryValue = document.getElementById("categoryFilter").value;
+      const minPriceValue = parseFloat(document.getElementById("minPrice").value) || 0;
+      const maxPriceValue = parseFloat(document.getElementById("maxPrice").value) || Infinity;
+      const sortValue = document.getElementById("sortPrice").value; // asc, desc lub ""
+
+      let filtered = products.filter(product => {
+        const matchesName = product.name.toLowerCase().includes(searchValue);
+        const matchesCategory = categoryValue ? product.category === categoryValue : true;
+        const matchesPrice = (product.price >= minPriceValue) && (product.price <= maxPriceValue);
+
+        return matchesName && matchesCategory && matchesPrice;
+      });
+
+      if (sortValue === "asc") {
+        filtered.sort((a, b) => a.price - b.price);
+      } else if (sortValue === "desc") {
+        filtered.sort((a, b) => b.price - a.price);
+      }
+
+      renderProducts(filtered);
+    }
+    window.onload = function() {
+      updateCartCount();
+      renderProducts(products);
+    };
+  </script>
+
+</body>
+</html>

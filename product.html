@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8" />
+  <title>Szczegóły produktu</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background: #f9f9f9;
+    }
+
+    header {
+      background: #ffcad4;
+      padding: 20px;
+      text-align: center;
+    }
+    header h1 {
+      margin: 0;
+      color: #6d3a6d;
+    }
+
+    .container {
+      display: flex;
+      flex-wrap: wrap;
+      max-width: 1200px;
+      margin: 20px auto;
+      padding: 10px;
+      gap: 20px;
+    }
+    .left-panel {
+      flex: 1;
+      text-align: center;
+      min-width: 300px;
+    }
+    .left-panel img {
+      max-width: 100%;
+      border-radius: 8px;
+    }
+    .right-panel {
+      flex: 1;
+      background-color: #ffe4e1;
+      border-radius: 12px;
+      padding: 20px;
+      min-width: 300px;
+    }
+    .right-panel h2 {
+      margin-top: 0;
+      color: #6d3a6d;
+    }
+    .price {
+      font-size: 1.2rem;
+      font-weight: bold;
+      margin-bottom: 10px;
+    }
+
+    footer {
+      text-align: center;
+      padding: 20px;
+      background: #ffcad4;
+      color: #6d3a6d;
+      margin-top: 20px;
+    }
+    /* Prosta klasa dla linku powrotu */
+    .back-link {
+      display: inline-block;
+      margin-bottom: 20px;
+      color: #6d3a6d;
+      text-decoration: none;
+      font-weight: bold;
+      background: #fff;
+      padding: 8px 12px;
+      border-radius: 8px;
+      border: 2px solid #ffc2cd;
+      transition: background 0.2s;
+    }
+    .back-link:hover {
+      background: #ffc2cd;
+      color: #fff;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>Szczegóły produktu</h1>
+  </header>
+
+  <div class="container">
+    <div class="left-panel">
+      <img id="product-image" src="" alt="Produkt" />
+    </div>
+    <div class="right-panel">
+      <!-- Link powrotu na stronę główną -->
+      <a class="back-link" href="index.html">← Powrót do listy</a>
+
+      <h2 id="product-name"></h2>
+      <div class="price">Cena: <span id="product-price"></span> PLN</div>
+      <p id="product-description"></p>
+    </div>
+  </div>
+
+  <footer>
+    <p>© 2025 Słodki Sklepik - Wszystkie prawa zastrzeżone</p>
+  </footer>
+
+  <script>
+    // Ta sama tablica produktów:
+    const products = [
+      // Ciasta
+      { 
+        name: "Sernik",
+        slug: "sernik", 
+        image: "sernik.png",
+        price: 20.99,
+        description: "Tradycyjny sernik na kruchym spodzie z wiejskiego twarogu."
+      },
+      { 
+        name: "Szarlotka",
+        slug: "szarlotka",
+        image: "szarlotka.png",
+        price: 18.99,
+        description: "Klasyczna szarlotka z polskich jabłek, pachnąca cynamonem."
+      },
+      { 
+        name: "Brownie",
+        slug: "brownie",
+        image: "brownie.png",
+        price: 22.99,
+        description: "Wilgotne i mocno czekoladowe brownie z chrupiącą skorupką."
+      },
+      // Żelki
+      { 
+        name: "Muffinka czekoladowa",
+        slug: "muffinkaczekoladowa",
+        image: "babeczkaczekoladowa.png",
+        price: 9.99,
+        description: "Wilgotna muffinka z intensywnie czekoladowym wnętrzem i chrupiącymi wiórkami czekolady."
+      },
+      { 
+        name: "Muffinka jagodowa",
+        slug: "muffinkajagodowa",
+        image: "babeczkajagodowa.png",
+        price: 7.99,
+        description: "Puszysta babeczka wypełniona soczystymi jagodami, pachnąca letnim słońcem."
+      },
+      { 
+        name: "Muffinka tęczkowa",
+        slug: "muffinkateczowa",
+        image: "babeczkateczowa.png",
+        price: 8.99,
+        description: "Kolorowa przyjemność z warstwami ciasta o różnych smakach i słodkim lukrem w barwach tęczy."
+      },
+      // Czekolady
+      { 
+        name: "Czekolada mleczna",
+        slug: "czekoladamleczna",
+        image: "czekoladamleczna.png",
+        price: 12.99,
+        description: "Aksamitna, delikatna czekolada mleczna z wysokiej jakości kakao."
+      },
+      { 
+        name: "Czekolada gorzka",
+        slug: "czekoladagorzka",
+        image: "czekoladagorzka.png",
+        price: 13.99,
+        description: "Gorzka czekolada o intensywnym aromacie i 70% zawartości kakao."
+      },
+      { 
+        name: "Czekolada orzechowa",
+        slug: "czekoladaorzechowa",
+        image: "czekoladaorzechowa.png",
+        price: 14.99,
+        description: "Zaskakująco słodka i interesująca czekolada o smaku orzechów."
+      },
+      // Makaroniki
+      { 
+        name: "Makaronik cytrynowy",
+        slug: "makaronikcytrynowy",
+        image: "makaronikcytrynowy.png",
+        price: 5.99,
+        description: "Francuski makaronik w odcieniu żółtym z aromatem cytryn."
+      },
+      { 
+        name: "Makaronik czekoladowy",
+        slug: "makaronikczekoladowy",
+        image: "makaronikczekoladowy.png",
+        price: 6.99,
+        description: "Czekoladowy makaronik z intensywnym wnętrzem ganache."
+      },
+      { 
+        name: "Makaronik kokosowy",
+        slug: "makaronikkokosowy",
+        image: "makaronikkokosowy.png",
+        price: 6.49,
+        description: "Subtelny makaronik z chrupiącą otoczką i kokosowym nadzieniem."
+      },
+      // Ciasteczka
+      { 
+        name: "Ciasteczka czekoladowe",
+        slug: "ciasteczkaczekoladowe",
+        image: "ciasteczkaczekoladowe.png",
+        price: 10.99,
+        description: "Kruche ciasteczka z dużymi kawałkami czekolady."
+      },
+      { 
+        name: "Ciasteczka owsiane",
+        slug: "ciasteczkaowsiane",
+        image: "ciasteczkaowsiane.png",
+        price: 8.49,
+        description: "Zdrowe, pełnoziarniste ciasteczka z płatków owsianych."
+      },
+      { 
+        name: "Ciasteczka kokosowe",
+        slug: "ciasteczkakokosowe",
+        image: "ciasteczkakokosowe.png",
+        price: 9.49,
+        description: "Pachnące kokosem ciasteczka, lekko chrupiące na brzegach."
+      }
+    ];
+
+    // 1. Pobieramy parametr "slug" z URL (np. "?slug=sernik")
+    const urlParams = new URLSearchParams(window.location.search);
+    const slugParam = urlParams.get("slug"); // np. "sernik"
+
+    // 2. Szukamy produktu, który ma slug === "sernik"
+    const product = products.find(item => item.slug === slugParam);
+
+    // 3. Jeśli produkt istnieje, wypełniamy stronę danymi
+    if (product) {
+      document.getElementById("product-image").src = product.image;
+      document.getElementById("product-image").alt = product.name;
+      document.getElementById("product-name").textContent = product.name;
+      document.getElementById("product-price").textContent = product.price.toFixed(2);
+      document.getElementById("product-description").textContent = product.description;
+    } else {
+      // Jeśli brak produktu o podanym slug, informacja dla użytkownika
+      document.querySelector(".container").innerHTML = "<p>Nie znaleziono takiego produktu.</p>";
+    }
+  </script>
+
+</body>
+</html>

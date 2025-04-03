@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8" />
+  <title>Dziękujemy za zamówienie</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0; 
+      padding: 20px;
+      background: #f9f9f9;
+      text-align: center;
+      color: #6d3a6d;
+    }
+    .thankyou-container {
+      max-width: 700px;
+      margin: 40px auto;
+      background: #fff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      text-align: left;
+    }
+    h1 {
+      margin-bottom: 20px;
+      text-align: center;
+    }
+    .order-id {
+      font-size: 1.2rem;
+      color: #ffcad4;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+    .section {
+      margin-bottom: 30px;
+    }
+    .section h2 {
+      margin-top: 0;
+      color: #6d3a6d;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+    }
+    th, td {
+      padding: 10px;
+      text-align: center;
+      border: 1px solid #ddd;
+    }
+    th {
+      background: #ffcad4;
+      color: #6d3a6d;
+      font-weight: bold;
+    }
+    .back-link {
+      margin-top: 20px;
+      display: block;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="thankyou-container">
+    <h1>Dziękujemy za zamówienie!</h1>
+    
+    <div class="order-id">
+      Numer zamówienia: <span id="order-id"></span>
+    </div>
+    <div class="section" id="user-data-section" style="display:none;">
+      <h2>Twoje dane</h2>
+      <p><strong>Imię i nazwisko:</strong> <span id="full-name"></span></p>
+      <p><strong>Kontakt:</strong> 
+        Email: <span id="email"></span>, 
+        Tel: <span id="phone"></span>
+      </p>
+      <p><strong>Adres dostawy:</strong> 
+        <span id="street"></span>, 
+        <span id="zip"></span> 
+        <span id="city"></span>
+      </p>
+      <p><strong>Metoda dostawy:</strong> <span id="deliveryMethod"></span></p>
+      <p><strong>Metoda płatności:</strong> <span id="paymentMethod"></span></p>
+    </div>
+    <div class="section" id="cart-section" style="display:none;">
+      <h2>Twoje produkty</h2>
+      <table id="cart-table">
+        <thead>
+          <tr>
+            <th>Produkt</th>
+            <th>Ilość</th>
+            <th>Cena (PLN)</th>
+            <th>Razem</th>
+          </tr>
+        </thead>
+        <tbody id="cart-body">
+        </tbody>
+      </table>
+      <p id="cart-total" style="text-align:right; margin-top:10px; font-weight:bold;"></p>
+    </div>
+    <p style="text-align:center;">
+      W razie pytań prosimy o kontakt. Życzymy smacznych zakupów!
+    </p>
+    <p class="back-link">
+      <a href="index.html">Powrót do strony głównej</a>
+    </p>
+  </div>
+
+  <script>
+    const urlParams = new URLSearchParams(window.location.search);
+    const orderId = urlParams.get("orderId");
+    document.getElementById("order-id").textContent = orderId || "---";
+    const orderData = JSON.parse(sessionStorage.getItem("orderData")) || null;
+    if(orderData) {
+      document.getElementById("user-data-section").style.display = "block";
+      document.getElementById("cart-section").style.display = "block";
+      document.getElementById("full-name").textContent = `${orderData.firstName} ${orderData.lastName}`;
+      document.getElementById("email").textContent = orderData.email;
+      document.getElementById("phone").textContent = orderData.phone;
+      document.getElementById("street").textContent = orderData.street;
+      document.getElementById("city").textContent = orderData.city;
+      document.getElementById("zip").textContent = orderData.zip;
+      document.getElementById("deliveryMethod").textContent = orderData.deliveryMethod;
+      document.getElementById("paymentMethod").textContent = orderData.paymentMethod;
+      const cartBody = document.getElementById("cart-body");
+      cartBody.innerHTML = "";
+      let total = 0;
+
+      orderData.cart.forEach(item => {
+        const tr = document.createElement("tr");
+        
+        // Nazwa
+        const nameTd = document.createElement("td");
+        nameTd.textContent = item.name;
+        tr.appendChild(nameTd);
+
+        // Ilość
+        const qtyTd = document.createElement("td");
+        qtyTd.textContent = item.quantity;
+        tr.appendChild(qtyTd);
+
+        // Cena 
+        const priceTd = document.createElement("td");
+        priceTd.textContent = item.price.toFixed(2);
+        tr.appendChild(priceTd);
+
+        // Suma 
+        const sumTd = document.createElement("td");
+        const lineSum = item.price * item.quantity;
+        sumTd.textContent = lineSum.toFixed(2);
+        tr.appendChild(sumTd);
+
+        cartBody.appendChild(tr);
+        total += lineSum;
+      });
+
+      document.getElementById("cart-total").textContent = `Łącznie do zapłaty: ${total.toFixed(2)} PLN`;
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8" />
+  <title>Twój Koszyk</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 20px;
+      background: #f9f9f9;
+    }
+    h1 {
+      text-align: center;
+      color: #6d3a6d;
+    }
+    .cart-container {
+      max-width: 800px;
+      margin: 20px auto;
+      background: #fff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    table th, table td {
+      padding: 10px;
+      text-align: center;
+    }
+    table th {
+      background: #ffcad4;
+      color: #6d3a6d;
+    }
+    .btn {
+      padding: 5px 10px;
+      background: #ffcad4;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      color: #6d3a6d;
+      font-weight: bold;
+      margin: 2px;
+    }
+    .btn-check {
+      padding: 5px 10px;
+      background: #ffcad4;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      color: #6d3a6d;
+      font-weight: bold;
+      margin-left: 515px;
+      text-align: center;
+    }
+    .btn:hover {
+      background: #ffc2cd;
+    }
+    .empty-message {
+      text-align: center;
+      color: #888;
+      font-style: italic;
+      margin-top: 20px;
+    }
+    .cart-total {
+      text-align: right;
+      margin-top: 20px;
+      font-size: 1.2rem;
+      font-weight: bold;
+    }
+    .back-arrow {
+        position: absolute;
+        top: 10px; 
+        left: 10px;
+        width: 30px;             
+        height: 30px;
+        background: #ffcad4;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+
+        .back-arrow a {
+        text-decoration: none;
+        color: #6d3a6d;
+        font-weight: bold;
+        font-size: 16px;
+    }
+
+  </style>
+</head>
+<body>
+    <div class="back-arrow" onclick="location.href='index.html'">
+        ←
+    </div>
+  
+  <h1>Twój Koszyk</h1>
+
+  <div class="cart-container">
+    <table id="cart-table">
+  <thead>
+    <tr>
+      <th>Produkt</th>
+      <th>Cena (PLN)</th>
+      <th> </th>
+      <th>Ilość</th>
+      <th>Usuń</th>
+    </tr>
+  </thead>
+  <tbody id="cart-body">
+  </tbody>
+</table>
+
+    <div id="cart-empty" class="empty-message" style="display:none;">
+      Koszyk jest pusty.
+    </div>
+    <div id="cart-total" class="cart-total"></div>
+  </div>
+<button id="checkout-btn" class="btn-check">Przejdź do zamówienia</button>
+  <script>
+    let cart = JSON.parse(localStorage.getItem("cart")) || [];
+    function saveCart() {
+      localStorage.setItem("cart", JSON.stringify(cart));
+    }
+    function renderCart() {
+      const cartBody = document.getElementById("cart-body");
+      const cartEmptyMsg = document.getElementById("cart-empty");
+      const cartTotalEl = document.getElementById("cart-total");
+
+      cartBody.innerHTML = "";
+
+      if (cart.length === 0) {
+        cartEmptyMsg.style.display = "block";
+        cartTotalEl.textContent = "";
+        return;
+      } else {
+        cartEmptyMsg.style.display = "none";
+      }
+
+      let totalPrice = 0;
+
+            cart.forEach((item, index) => {
+        const row = document.createElement("tr");
+        const nameCell = document.createElement("td");
+        nameCell.textContent = item.name;
+        row.appendChild(nameCell);
+        const priceCell = document.createElement("td");
+        priceCell.textContent = item.price.toFixed(2);
+        row.appendChild(priceCell);
+        const totalPriceCell = document.createElement("td");
+        const totalPriceSpan = document.createElement("span");
+        totalPriceSpan.style.fontSize = "0.8rem";
+        totalPriceSpan.style.color = "#999";
+        totalPriceSpan.style.fontStyle = "italic";
+
+        const totalPriceValue = (item.price * item.quantity).toFixed(2);
+        totalPriceSpan.textContent = totalPriceValue + " PLN";
+
+        totalPriceCell.appendChild(totalPriceSpan);
+        row.appendChild(totalPriceCell);
+        const qtyCell = document.createElement("td");
+
+        const minusBtn = document.createElement("button");
+        minusBtn.textContent = "-";
+        minusBtn.classList.add("btn");
+        minusBtn.onclick = () => {
+            if (item.quantity > 1) {
+            item.quantity--;
+            }
+            saveCart();
+            renderCart();
+        };
+
+        const plusBtn = document.createElement("button");
+        plusBtn.textContent = "+";
+        plusBtn.classList.add("btn");
+        plusBtn.onclick = () => {
+            item.quantity++;
+            saveCart();
+            renderCart();
+        };
+
+        const qtySpan = document.createElement("span");
+        qtySpan.textContent = ` ${item.quantity} `;
+
+        qtyCell.appendChild(minusBtn);
+        qtyCell.appendChild(qtySpan);
+        qtyCell.appendChild(plusBtn);
+        row.appendChild(qtyCell);
+        const removeCell = document.createElement("td");
+        const removeBtn = document.createElement("button");
+        removeBtn.textContent = "Usuń";
+        removeBtn.classList.add("btn");
+        removeBtn.onclick = () => {
+            cart.splice(index, 1);
+            saveCart();
+            renderCart();
+        };
+        removeCell.appendChild(removeBtn);
+        row.appendChild(removeCell);
+        cartBody.appendChild(row);
+        totalPrice += item.price * item.quantity;
+        });
+
+      cartTotalEl.textContent = `Razem: ${totalPrice.toFixed(2)} PLN`;
+    }
+    renderCart();
+const checkoutBtn = document.getElementById("checkout-btn");
+if(checkoutBtn) {
+  checkoutBtn.addEventListener("click", () => {
+    if (cart.length > 0) {
+      window.location.href = "checkout.html";
+    } else {
+      alert("Koszyk jest pusty! Dodaj produkty, zanim przejdziesz dalej.");
+    }
+  });
+}
+
+  </script>
+</body>
+</html>
